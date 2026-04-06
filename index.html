@@ -370,6 +370,43 @@
     0%,100% { box-shadow: 0 0 30px rgba(90,45,130,0.4), 0 0 60px rgba(139,0,0,0.2); }
     50% { box-shadow: 0 0 50px rgba(255,0,0,0.5), 0 0 80px rgba(139,0,0,0.4); }
   }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 600px) {
+    .blood-header { height: 60px; }
+    .blood-bar { height: 14px; }
+    .page { padding: 55px 10px 8px; justify-content: flex-start; }
+    .title-screen { padding: 5px 10px 10px; }
+    .title-screen h1 { font-size: 2rem; margin-bottom: 4px; }
+    .title-screen .subtitle { font-size: 0.9rem; margin-bottom: 8px; }
+    .title-screen .author { font-size: 0.85rem; margin-bottom: 10px; }
+    .monster-gallery { gap: 8px; margin-bottom: 12px; }
+    .monster-card { padding: 8px; border-radius: 10px; }
+    .monster-card .name { font-size: 0.9rem; }
+    .monster-card .power { font-size: 0.65rem; }
+    .start-btn { font-size: 1.2rem; padding: 12px 30px; }
+    .story-image-container { max-height: 25vh; border-width: 2px; border-radius: 10px; margin-bottom: 6px; }
+    .story-text { font-size: 0.8rem; line-height: 1.3; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; }
+    .story-text .big-text { font-size: 1.5em; margin: 4px 0; }
+    .story-text .highlight { font-size: 1.05em; }
+    .speak-btn { font-size: 0.75rem; padding: 4px 12px; margin-bottom: 5px; }
+    .choices { gap: 6px; }
+    .choice-btn { font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; }
+    .next-btn { font-size: 0.95rem; padding: 7px 20px; border-radius: 10px; }
+    .restart-btn { font-size: 1.2rem; padding: 12px 30px; }
+    .sound-toggle { width: 36px; height: 36px; font-size: 1.3rem; top: 16px; right: 10px; }
+    .explosion-wrapper { max-height: 25vh; }
+    .modal-box { padding: 20px; }
+    .modal-box img { width: 140px; height: 140px; }
+  }
+
+  /* ===== SMALL MOBILE (SE, etc) ===== */
+  @media (max-height: 700px) {
+    .story-image-container { max-height: 25vh; }
+    .explosion-wrapper { max-height: 25vh; }
+    .story-text { font-size: 0.8rem; padding: 8px 12px; }
+    .page { padding: 12px 8px 8px; }
+  }
 </style>
 </head>
 <body>
