@@ -1,13 +1,51 @@
+<!--
+  ARCHITECTURE REVIEW NOTES (2026-04-06)
+
+  1. SINGLE FILE: Correct call for GitHub Pages with no build system.
+     Split into .css/.js only if it keeps growing past ~2000 lines.
+
+  2. BATTLE MATCHUPS: Flat object with string keys works. All 21 pairs
+     present. getBattleKey() normalizer is good. Adding monster #8 means
+     7 new matchup entries + images.
+
+  3. DEAD DATA: monsterData strength/speed/toughness stats are never read.
+     Use them or remove them.
+
+  4. DEAD FILES in images/: 3 unused .svg files. Audit periodically.
+
+  5. generate_images.py: Missing 4 of 7 monster portraits. Add all 7.
+
+  6. ADDING MONSTER #8 CHECKLIST:
+     - monsterData entry (id, img, name, power, weakness)
+     - monster-card in .monster-gallery HTML
+     - battle-pick in #battlePickGrid HTML
+     - 7 new battleMatchups entries
+     - Portrait image + 7 battle scene images
+     - Update generate_images.py
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Spooky Scope - A Monster Story by Evan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Griffy&display=swap">
-<script src="https://js.puter.com/v2/" defer></script>
+<!-- Fonts loaded locally to avoid external network requests -->
+<style>
+  @font-face {
+    font-family: 'Creepster';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Creepster-Regular.ttf) format('truetype');
+  }
+  @font-face {
+    font-family: 'Griffy';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fonts/Griffy-Regular.ttf) format('truetype');
+  }
+</style>
 <style>
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,6 +78,7 @@
     animation-delay: var(--drip-delay, 0s);
     transform-origin: top;
     box-shadow: 0 0 6px rgba(204,0,0,0.6);
+    will-change: transform, opacity;
   }
   @keyframes dripping {
     0% { transform: scaleY(0); opacity: 1; }
@@ -52,6 +91,7 @@
   .fog, .fog2 {
     position: fixed; bottom: 0; left: -10%; width: 120%;
     pointer-events: none; z-index: 50;
+    will-change: transform, opacity;
   }
   .fog {
     height: 250px;
@@ -76,6 +116,7 @@
     animation: floatUp var(--float-duration, 6s) linear infinite;
     animation-delay: var(--float-delay, 0s);
     left: var(--float-x, 50%);
+    will-change: transform, opacity;
   }
   .particle.green { background: rgba(0,255,100,0.5); }
   .particle.red { background: rgba(255,0,0,0.4); }
@@ -156,6 +197,86 @@
   .monster-card .name { font-family: 'Creepster', cursive; font-size: 1.1rem; color: #cc0000; }
   .monster-card .power { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
 
+  /* ===== TITLE BUTTONS ===== */
+  .title-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .battle-btn {
+    background: linear-gradient(135deg, #1a0040, #4a0080, #7700cc) !important;
+    border-color: #aa44ff !important;
+    box-shadow: 0 0 20px rgba(120,0,204,0.5), inset 0 0 20px rgba(0,0,0,0.3) !important;
+  }
+
+  /* ===== BATTLE MODAL ===== */
+  .battle-modal-box {
+    background: linear-gradient(135deg, #0a0015, #1a0030);
+    border: 3px solid #7700cc;
+    border-radius: 24px; padding: 24px; max-width: 700px; width: 90%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 0 60px rgba(120,0,200,0.4);
+    text-align: center;
+  }
+  .battle-title {
+    font-family: 'Creepster', cursive; font-size: 2.2rem;
+    color: #cc44ff; text-shadow: 0 0 20px rgba(200,0,255,0.6);
+    margin-bottom: 4px;
+  }
+  .battle-subtitle { color: #aaa; font-size: 0.95rem; margin-bottom: 12px; }
+  .battle-slots {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin-bottom: 16px; font-family: 'Creepster', cursive; font-size: 1.3rem;
+  }
+  .battle-slot { color: #ff4444; min-width: 100px; }
+  .battle-vs-small { color: #cc44ff; font-size: 1rem; }
+  .battle-pick-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px; margin-bottom: 16px;
+  }
+  .battle-pick {
+    background: rgba(30,0,60,0.6); border: 2px solid #333;
+    border-radius: 12px; padding: 8px; cursor: pointer;
+    transition: all 0.2s; text-align: center;
+  }
+  .battle-pick img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+  .battle-pick span { display: block; font-size: 0.7rem; color: #aaa; margin-top: 4px; }
+  .battle-pick:hover { border-color: #7700cc; transform: scale(1.05); }
+  .battle-pick.selected1 { border-color: #ff2222; box-shadow: 0 0 15px rgba(255,0,0,0.5); background: rgba(100,0,0,0.4); }
+  .battle-pick.selected2 { border-color: #2266ff; box-shadow: 0 0 15px rgba(0,80,255,0.5); background: rgba(0,0,100,0.4); }
+
+  .battle-arena {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    margin-bottom: 16px;
+  }
+  .battle-fighter { text-align: center; }
+  .battle-fighter img { width: 120px; height: 120px; object-fit: cover; border-radius: 16px; }
+  .battle-fighter-name { font-family: 'Creepster', cursive; font-size: 1.1rem; color: #ff4444; margin-top: 4px; }
+  .battle-vs {
+    font-family: 'Creepster', cursive; font-size: 2.5rem;
+    color: #cc44ff; text-shadow: 0 0 30px rgba(200,0,255,0.8);
+  }
+  .battle-vs.battle-clash { animation: clashPulse 0.6s ease-out; }
+  @keyframes clashPulse {
+    0% { transform: scale(3); opacity: 0; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .battle-scene-container { margin-bottom: 16px; }
+  .battle-scene-img {
+    width: 100%; max-width: 400px; border-radius: 16px;
+    border: 2px solid #7700cc;
+    box-shadow: 0 0 30px rgba(120,0,200,0.3);
+  }
+  .battle-narration {
+    background: rgba(0,0,0,0.5); border: 1px solid #444;
+    border-radius: 16px; padding: 16px; margin-bottom: 16px;
+    font-size: 1.05rem; line-height: 1.6; color: #ddd;
+  }
+  .battle-winner { margin-bottom: 16px; }
+  .battle-winner img { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 3px solid #ffcc00; box-shadow: 0 0 30px rgba(255,200,0,0.5); }
+  .battle-winner-name {
+    font-family: 'Creepster', cursive; font-size: 1.6rem;
+    color: #ffcc00; text-shadow: 0 0 15px rgba(255,200,0,0.6);
+    margin-top: 8px;
+  }
+
   /* ===== BUTTONS ===== */
   .start-btn {
     font-family: 'Creepster', cursive; font-size: clamp(1.3rem, 2.5vw, 2rem); color: #fff;
@@ -176,7 +297,7 @@
   .page {
     display: none; flex-direction: column; align-items: center;
     justify-content: center;
-    height: 100vh; overflow: hidden;
+    min-height: 100vh; overflow-y: auto;
     padding: 30px 20px 20px;
     animation: fadeIn 0.8s ease;
   }
@@ -236,17 +357,6 @@
     text-shadow: 0 0 15px rgba(255,0,0,0.8), 0 0 30px rgba(255,0,0,0.4);
     display: block; margin: 10px 0;
   }
-
-  /* ===== SPEAK BUTTON ===== */
-  .speak-btn {
-    background: rgba(90,45,130,0.4); border: 2px solid #7b68ee;
-    color: #ccc; font-family: 'Griffy', cursive; font-size: clamp(0.85rem, 1.2vw, 1.1rem);
-    padding: 6px 18px; border-radius: 30px; cursor: pointer;
-    margin-bottom: 8px; transition: all 0.3s; flex-shrink: 0;
-  }
-  .speak-btn:hover { background: rgba(90,45,130,0.7); color: #fff; }
-  .speak-btn.loading { opacity: 0.6; pointer-events: none; }
-  .speak-btn.playing { background: rgba(204,0,0,0.5); border-color: #cc0000; color: #fff; }
 
   /* ===== CHOICE BUTTONS ===== */
   .choices { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 85vw; flex-shrink: 0; }
@@ -389,7 +499,6 @@
     .story-text { font-size: 0.8rem; line-height: 1.3; padding: 8px 12px; margin-bottom: 5px; border-radius: 10px; }
     .story-text .big-text { font-size: 1.5em; margin: 4px 0; }
     .story-text .highlight { font-size: 1.05em; }
-    .speak-btn { font-size: 0.75rem; padding: 4px 12px; margin-bottom: 5px; }
     .choices { gap: 6px; }
     .choice-btn { font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; }
     .next-btn { font-size: 0.95rem; padding: 7px 20px; border-radius: 10px; }
@@ -458,21 +567,39 @@
         <div class="name">Rock Person</div>
         <div class="power">Invisible to almost all!</div>
       </div>
+      <div class="monster-card" onclick="showMonsterInfo('giantlegs')">
+        <img src="images/giant-legs.png" alt="Giant Legs" loading="lazy">
+        <div class="name">Giant Legs</div>
+        <div class="power">Just legs. STOMP!</div>
+      </div>
+      <div class="monster-card" onclick="showMonsterInfo('terradaxoar')">
+        <img src="images/terradaxoar.png" alt="Terradaxoar" loading="lazy">
+        <div class="name">Terradaxoar</div>
+        <div class="power">Five-eyed flyer!</div>
+      </div>
+      <div class="monster-card" onclick="showMonsterInfo('healbeast')">
+        <img src="images/slime-blob.png" alt="Slime Blob" loading="lazy">
+        <div class="name">Slime Blob</div>
+        <div class="power">Smash it... it heals!</div>
+      </div>
     </div>
 
-    <button class="start-btn" onclick="startStory()">Enter the Dark Forest...</button>
+    <div class="title-buttons">
+      <button class="start-btn" onclick="startStory()">Enter the Dark Forest...</button>
+      <button class="start-btn battle-btn" onclick="openBattle()">Monster Battle!</button>
+    </div>
   </div>
 </div>
 
 <!-- ==================== PAGE 1: INTRO ==================== -->
 <div class="page" id="page1">
   <div class="story-image-container">
-    <img src="images/dark-forest.png" alt="A dark spooky forest" loading="lazy" loading="lazy">
+    <img src="images/dark-forest.png" alt="A dark spooky forest" loading="lazy">
   </div>
   <div class="story-text">
     In the <span class="glow-purple">darkest part of the world</span>, where the sun never shines, there is a forest that no one goes into. The trees drip with black slime. And if you listen closely... you can hear something <span class="glow-green">breathing</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page2')">What lives in there? ➜</button>
 </div>
 
@@ -484,7 +611,7 @@
   <div class="story-text">
     Deep in the shadows crawled the <span class="highlight">Spider Scope</span>. A twisted purple spider with a magical <span class="glow-green">telescope scope</span> bolted to its head. The scope could see things hidden from every other creature, especially the <span class="glow-purple">Rock Person</span>, who was invisible to everyone else.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page3')">What else lurks here? ➜</button>
 </div>
 
@@ -496,7 +623,7 @@
   <div class="story-text">
     Then the ground started to <span class="highlight">SHAKE</span>. The <span class="highlight">Belly Bonker</span> stepped out of the darkness. HUGE. Dark shaggy fur, claws that could tear through rock, and in its belly... a <span class="glow-green">glowing green EYE</span> that never blinked. That eye could see almost anything. But there was ONE thing it could never see: the <span class="glow-purple">Rock Person</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page4')">Something bad is about to happen... ➜</button>
 </div>
 
@@ -508,7 +635,7 @@
   <div class="story-text">
     One terrible night, the <span class="highlight">Belly Bonker</span> came crashing through the trees! Its belly eye burned <span class="highlight">angry red</span>. It wanted to <span class="big-text">DESTROY</span> the Spider Scope! It swung its massive claws. Trees shattered. The Spider Scope tried to run, but the Belly Bonker was too fast!
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <div class="choices">
     <button class="choice-btn" onclick="goToPage('page5a')">🌳 Something in the forest is watching...</button>
     <button class="choice-btn" onclick="goToPage('page5b')">👁️ Spider Scope uses its scope to find help!</button>
@@ -523,7 +650,7 @@
   <div class="story-text">
     But one of the trees behind it started to <span class="glow-green">move</span>. Bark cracked. Eyes appeared. Then a mouth. Then ANOTHER mouth. Then <span class="highlight">THREE</span> mouths, all full of teeth sharp as swords. The <span class="highlight">Tree Surpriser</span>. And it was <span class="glow-green">STARVING</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page6a')">CHOMP! ➜</button>
 </div>
 
@@ -535,7 +662,7 @@
   <div class="story-text">
     The Spider Scope aimed its magical scope into the darkness and found the <span class="glow-purple">Rock Person</span> hiding right next to the Belly Bonker! "HELP ME!" screamed the Spider Scope. The Rock Person could hear everything, but the Belly Bonker couldn't see it. The Rock Person was <span class="glow-green">completely invisible</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <div class="choices">
     <button class="choice-btn" onclick="goToPage('page6b')">🪨 Rock Person trips the Belly Bonker!</button>
     <button class="choice-btn" onclick="goToPage('page5a')">🌳 Rock Person wakes up the Tree Surpriser!</button>
@@ -553,7 +680,7 @@
     <br><br>
     But then... the Tree Surpriser started to <span class="glow-green">shake</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page7')">What's happening?! ➜</button>
 </div>
 
@@ -565,7 +692,7 @@
   <div class="story-text">
     The <span class="glow-purple">Rock Person</span> rolled right under the Belly Bonker's feet! The Belly Bonker couldn't see it coming. It <span class="highlight">TRIPPED</span> and went flying through the air, crashing straight into the biggest tree in the forest. But that wasn't a tree... it was the <span class="highlight">Tree Surpriser</span>. And the Tree Surpriser was VERY, VERY hungry...
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page6a')">Oh no... ➜</button>
 </div>
 
@@ -579,7 +706,7 @@
     <br>
     <span class="glow-green">CRACK... CRACK... CRACK...</span>
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page8')">💥 IT'S GONNA BLOW!!! ➜</button>
 </div>
 
@@ -597,7 +724,7 @@
     <br>
     The Tree Surpriser was <span class="highlight">DEAD.</span>
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page9')">Is it over? ➜</button>
 </div>
 
@@ -611,7 +738,7 @@
     <br>
     <span class="glow-green">The other trees were moving.</span>
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page10')">No... no no no... ➜</button>
 </div>
 
@@ -624,7 +751,7 @@
     <span class="big-text">THEY WERE ALL TREE SURPRISERS.</span>
     Every single tree had <span class="glow-green">glowing eyes</span> and <span class="highlight">mouths full of teeth</span>. HUNDREDS of them. ALL waking up. ALL hungry. The Spider Scope and Belly Bonker were completely <span class="highlight">SURROUNDED</span>.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page11')">Then the ground started shaking... ➜</button>
 </div>
 
@@ -637,7 +764,7 @@
     <span class="big-text">BOOOOM. BOOOOM. BOOOOM.</span>
     The ground cracked open. Something MASSIVE crawled out. A <span class="highlight">GIANT ZOMBIE</span> the size of a building! Rotting green flesh, glowing red eyes, bones sticking through skin. It opened its mouth and let out a roar so loud it shook every tree in the forest...
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <div class="choices">
     <button class="choice-btn" onclick="goToPage('page12a')">💀 The zombie fights the Tree Surprisers!</button>
     <button class="choice-btn" onclick="goToPage('page12b')">🕷️ Spider Scope, Belly Bonker, and the zombie team up!</button>
@@ -652,7 +779,7 @@
   <div class="story-text">
     The Giant Zombie swung its enormous fists and <span class="highlight">SMASHED</span> through the Tree Surprisers like they were toothpicks! Trees exploded! Green ooze sprayed everywhere! The Spider Scope and the Belly Bonker hid behind a rock and watched the zombie tear through the forest like a wrecking ball!
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page13')">Then what happened? ➜</button>
 </div>
 
@@ -664,7 +791,7 @@
   <div class="story-text">
     The Spider Scope, the Belly Bonker, and the Giant Zombie looked at each other. They used to be enemies. But now they had a bigger problem. The Belly Bonker's eye glowed. The Spider Scope aimed its scope. The zombie cracked its knuckles. They charged into battle <span class="highlight">TOGETHER</span> and smashed every last Tree Surpriser into sawdust!
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('page13')">After the battle... ➜</button>
 </div>
 
@@ -676,7 +803,7 @@
   <div class="story-text">
     When it was finally over, every Tree Surpriser was gone. The forest was covered in green slime and splinters. The first light of sunrise crept through the broken trees. The Giant Zombie let out one last roar, then sank back into the ground. The Belly Bonker's eye dimmed to a soft glow. And the Spider Scope looked through its magical scope one last time... just to make sure nothing else was hiding.
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="next-btn" onclick="goToPage('ending')">The end... ➜</button>
 </div>
 
@@ -691,7 +818,7 @@
     <span class="big-text">THE END</span>
     <span class="glow-green">A story by Evan</span>
   </div>
-  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+
   <button class="restart-btn" onclick="restart()">Read Again? 🦇</button>
 </div>
 
@@ -706,10 +833,78 @@
   </div>
 </div>
 
+<!-- ==================== BATTLE MODAL ==================== -->
+<div class="modal-overlay" id="battleModal" onclick="this.classList.remove('active')">
+  <div class="battle-modal-box" onclick="event.stopPropagation()">
+
+    <!-- PICK PHASE -->
+    <div id="battlePickPhase">
+      <h2 class="battle-title">MONSTER BATTLE!</h2>
+      <p class="battle-subtitle">Pick two monsters to fight!</p>
+      <div class="battle-slots">
+        <span class="battle-slot" id="battleSlot1">???</span>
+        <span class="battle-vs-small">VS</span>
+        <span class="battle-slot" id="battleSlot2">???</span>
+      </div>
+      <div class="battle-pick-grid" id="battlePickGrid">
+        <div class="battle-pick" data-monster="spider" onclick="pickBattleMonster('spider')">
+          <img src="images/spider-scope.png" alt="Spider Scope" loading="lazy"><span>Spider Scope</span>
+        </div>
+        <div class="battle-pick" data-monster="belly" onclick="pickBattleMonster('belly')">
+          <img src="images/belly-bonker.png" alt="Belly Bonker" loading="lazy"><span>Belly Bonker</span>
+        </div>
+        <div class="battle-pick" data-monster="tree" onclick="pickBattleMonster('tree')">
+          <img src="images/tree-surpriser.png" alt="Tree Surpriser" loading="lazy"><span>Tree Surpriser</span>
+        </div>
+        <div class="battle-pick" data-monster="rock" onclick="pickBattleMonster('rock')">
+          <img src="images/rock-person.png" alt="Rock Person" loading="lazy"><span>Rock Person</span>
+        </div>
+        <div class="battle-pick" data-monster="giantlegs" onclick="pickBattleMonster('giantlegs')">
+          <img src="images/giant-legs.png" alt="Giant Legs" loading="lazy"><span>Giant Legs</span>
+        </div>
+        <div class="battle-pick" data-monster="terradaxoar" onclick="pickBattleMonster('terradaxoar')">
+          <img src="images/terradaxoar.png" alt="Terradaxoar" loading="lazy"><span>Terradaxoar</span>
+        </div>
+        <div class="battle-pick" data-monster="healbeast" onclick="pickBattleMonster('healbeast')">
+          <img src="images/slime-blob.png" alt="Slime Blob" loading="lazy"><span>Slime Blob</span>
+        </div>
+      </div>
+      <button class="start-btn" id="battleGoBtn" onclick="runBattle()" disabled>FIGHT!</button>
+      <button class="modal-close" onclick="document.getElementById('battleModal').classList.remove('active')">Close</button>
+    </div>
+
+    <!-- STORY PHASE -->
+    <div id="battleStoryPhase" style="display:none;">
+      <div class="battle-arena">
+        <div class="battle-fighter">
+          <img id="battleFighter1Img" src="" alt="Fighter 1">
+          <div class="battle-fighter-name" id="battleFighter1Name"></div>
+        </div>
+        <div class="battle-vs" id="battleVS">VS</div>
+        <div class="battle-fighter">
+          <img id="battleFighter2Img" src="" alt="Fighter 2">
+          <div class="battle-fighter-name" id="battleFighter2Name"></div>
+        </div>
+      </div>
+      <div class="battle-scene-container">
+        <img id="battleSceneImg" src="" alt="Battle scene" class="battle-scene-img">
+      </div>
+      <div class="battle-narration" id="battleNarration"></div>
+      <div class="battle-winner">
+        <img id="battleWinnerImg" src="" alt="Winner">
+        <div class="battle-winner-name" id="battleWinnerName"></div>
+      </div>
+      <button class="start-btn" onclick="openBattle()">Battle Again!</button>
+      <button class="modal-close" onclick="document.getElementById('battleModal').classList.remove('active')">Close</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
   // ===== BLOOD DRIPS =====
   const dripsContainer = document.getElementById('bloodDrips');
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 20; i++) {
     const drip = document.createElement('div');
     drip.className = 'drip';
     drip.style.setProperty('--drip-duration', (1.5 + Math.random() * 4) + 's');
@@ -720,7 +915,7 @@
 
   // ===== FLOATING PARTICLES =====
   const particlesContainer = document.getElementById('particles');
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 15; i++) {
     const p = document.createElement('div');
     p.className = 'particle ' + (Math.random() > 0.5 ? 'green' : 'red');
     p.style.setProperty('--float-duration', (4 + Math.random() * 8) + 's');
@@ -814,60 +1009,6 @@
     }
   }
 
-  // ===== AI TEXT TO SPEECH (ElevenLabs via Puter.js) =====
-  let currentAudio = null;
-  const SPOOKY_VOICE = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - deep British narrator
-
-  function speakText(btn) {
-    if (currentAudio && !currentAudio.paused) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-      document.querySelectorAll('.speak-btn.playing').forEach(b => {
-        b.classList.remove('playing');
-        b.textContent = '🔊 Read Aloud';
-      });
-      currentAudio = null;
-      return;
-    }
-
-    const textDiv = btn.previousElementSibling;
-    const text = textDiv.innerText;
-
-    btn.classList.add('loading');
-    btn.textContent = '🔊 Loading spooky voice';
-
-    puter.ai.txt2speech(text, {
-      provider: 'elevenlabs',
-      voice: SPOOKY_VOICE,
-      model: 'eleven_multilingual_v2'
-    })
-    .then(audio => {
-      currentAudio = audio;
-      btn.classList.remove('loading');
-      btn.classList.add('playing');
-      btn.textContent = '⏹️ Stop Reading';
-      audio.play();
-      audio.addEventListener('ended', () => {
-        btn.classList.remove('playing');
-        btn.textContent = '🔊 Read Aloud';
-        currentAudio = null;
-      });
-    })
-    .catch(err => {
-      console.error('AI voice error:', err);
-      btn.classList.remove('loading');
-      btn.textContent = '🔊 Read Aloud';
-      if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 0.85;
-        utter.pitch = 0.7;
-        speechSynthesis.speak(utter);
-      }
-      currentAudio = null;
-    });
-  }
-
   // ===== PAGE NAVIGATION =====
   function goToPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -931,8 +1072,119 @@
       weakness: 'The Belly Bonker grows too big inside and EXPLODES it!' },
     rock: { img: 'images/rock-person.png', name: 'Rock Person',
       power: 'Invisible to everyone! Looks just like a rock!',
-      weakness: 'Only the Spider Scope can see it!' }
+      weakness: 'Only the Spider Scope can see it!' },
+    giantlegs: { img: 'images/giant-legs.png', name: 'Giant Legs',
+      power: 'No body, no head. JUST LEGS. Stomps everything flat!',
+      weakness: 'Has no eyes or brain... runs into things and falls over!' },
+    terradaxoar: { img: 'images/terradaxoar.png', name: 'Terradaxoar',
+      power: 'Flies through the sky with FIVE eyes that see in every direction!',
+      weakness: 'Too many eyes means too much to look at... gets confused by bright lights!' },
+    healbeast: { img: 'images/slime-blob.png', name: 'Slime Blob',
+      power: 'Smash it to pieces and it oozes back together! Unkillable!',
+      weakness: 'Belly Bonker or Tree Surpriser can destroy it for good. Tree Surpriser sucks it down through its roots!' }
   };
+
+  // ===== BATTLE SYSTEM =====
+  const battleMatchups = {
+    'spider_belly': { winner: 'belly', img: 'images/battle-spider-belly.png', story: 'The Spider Scope aimed its magical lens, but the Belly Bonker\'s eye glowed bright and BLASTED the scope to pieces! The Belly Bonker stomped on the shards. "Nobody out-sees MY eye!"' },
+    'spider_tree': { img: 'images/battle-spider-tree.png', winner: 'spider', story: 'The Tree Surpriser tried to hide, but the Spider Scope saw RIGHT through the disguise! It fired a beam of light through its scope and burned the tree to a crisp. "Nice try, log breath!"' },
+    'spider_rock': { img: 'images/battle-spider-rock.png', winner: 'spider', story: 'The Rock Person went invisible and sat perfectly still. But the Spider Scope\'s magical lens glowed purple and locked on! "I can SEE you!" The Rock Person had nowhere to hide.' },
+    'spider_giantlegs': { img: 'images/battle-spider-giantlegs.png', winner: 'giantlegs', story: 'The Spider Scope tried to aim, but Giant Legs had no body to hit! Just massive legs stomping everywhere. BOOM! BOOM! One enormous foot came down and flattened the scope like a pancake.' },
+    'spider_terradaxoar': { img: 'images/battle-spider-terradaxoar.png', winner: 'terradaxoar', story: 'The Spider Scope aimed up at the sky, but the Terradaxoar was too fast! It swooped down from behind with all five eyes blazing and snatched the scope right off the spider\'s face!' },
+    'spider_healbeast': { img: 'images/battle-spider-healbeast.png', winner: 'healbeast', story: 'The Spider Scope blasted the Slime Blob into a thousand tiny pieces. "Got it!" But then every piece started wiggling... and crawling back together. The Slime Blob reformed and sat there grinning. The Spider Scope ran away screaming.' },
+    'belly_tree': { img: 'images/battle-belly-tree.png', winner: 'belly', story: 'The Tree Surpriser opened its mouth wide and SWALLOWED the Belly Bonker whole! Bad idea. The Belly Bonker started growing inside... bigger... BIGGER... KABOOM! The tree EXPLODED into a million splinters!' },
+    'belly_rock': { img: 'images/battle-belly-rock.png', winner: 'rock', story: 'The Belly Bonker\'s eye searched everywhere, but the Rock Person was completely invisible! The Belly Bonker walked right past, bonking the ground in frustration. The Rock Person snuck up and pushed it off a cliff.' },
+    'belly_giantlegs': { img: 'images/battle-belly-giantlegs.png', winner: 'belly', story: 'Giant Legs came stomping in, but the Belly Bonker rolled between the massive legs and looked UP with its belly eye. It found the one weak spot and BONKED it so hard the legs wobbled and crashed down like falling trees!' },
+    'belly_terradaxoar': { img: 'images/battle-belly-terradaxoar.png', winner: 'terradaxoar', story: 'The Belly Bonker\'s eye tracked the Terradaxoar in the sky, but with five eyes the Terradaxoar saw the attack coming from every angle! It dive-bombed so fast the Belly Bonker couldn\'t even blink before getting carried away.' },
+    'belly_healbeast': { img: 'images/battle-belly-healbeast.png', winner: 'belly', story: 'The Belly Bonker smashed the Slime Blob into tiny pieces. The pieces started to reform... but the Belly Bonker\'s eye glowed HOT and burned every piece before they could reconnect! The Slime Blob was finally destroyed!' },
+    'tree_rock': { img: 'images/battle-tree-rock.png', winner: 'tree', story: 'The Rock Person went invisible and crept through the forest. But it walked right past what looked like a normal tree... CHOMP! The Tree Surpriser swallowed it whole! Even invisibility can\'t help when you walk into a mouth!' },
+    'tree_giantlegs': { img: 'images/battle-tree-giantlegs.png', winner: 'giantlegs', story: 'The Tree Surpriser disguised itself perfectly. But Giant Legs doesn\'t look where it\'s going because it has NO EYES! It stomped right through the Tree Surpriser without even knowing! CRUNCH!' },
+    'tree_terradaxoar': { img: 'images/battle-tree-terradaxoar.png', winner: 'tree', story: 'The Terradaxoar flew low through the forest, its five eyes scanning for prey. But it couldn\'t tell the Tree Surpriser from the other trees! A branch reached out and YANKED it down. Five eyes saw it coming but couldn\'t stop!' },
+    'tree_healbeast': { img: 'images/battle-tree-healbeast.png', winner: 'tree', story: 'The Slime Blob charged at the Tree Surpriser, but roots shot out of the ground and grabbed it! The Tree Surpriser sucked the Slime Blob down through its roots, deep underground where the pieces could never find each other again!' },
+    'rock_giantlegs': { img: 'images/battle-rock-giantlegs.png', winner: 'rock', story: 'Giant Legs stomped around blindly, trying to squash the Rock Person. But it was invisible! It just sat still while the Giant Legs wore itself out stomping at nothing, then tripped over the Rock Person and crashed into a canyon!' },
+    'rock_terradaxoar': { img: 'images/battle-rock-terradaxoar.png', winner: 'terradaxoar', story: 'The Rock Person went invisible, but the Terradaxoar has FIVE EYES! One of them could see invisible things! It spotted the Rock Person hiding and grabbed it with razor talons. "You can\'t hide from five eyes!"' },
+    'rock_healbeast': { img: 'images/battle-rock-healbeast.png', winner: 'rock', story: 'The Slime Blob couldn\'t find the invisible Rock Person. It wandered around confused while the Rock Person slowly pushed it toward the edge of a volcano. One invisible shove and... SPLASH! Even healing can\'t help in lava!' },
+    'giantlegs_terradaxoar': { img: 'images/battle-giantlegs-terradaxoar.png', winner: 'terradaxoar', story: 'Giant Legs tried to stomp the Terradaxoar, but you can\'t stomp something that FLIES! The Terradaxoar soared above the kicks and dove at the legs over and over until they buckled. No head means no way to look up!' },
+    'giantlegs_healbeast': { img: 'images/battle-giantlegs-healbeast.png', winner: 'giantlegs', story: 'Giant Legs stomped the Slime Blob flat. It started to reform... STOMP! Flat again. Reform... STOMP! The Giant Legs never got tired and the Slime Blob never stopped trying. But legs that never stop beat healing that takes time!' },
+    'terradaxoar_healbeast': { img: 'images/battle-terradaxoar-healbeast.png', winner: 'terradaxoar', story: 'The Terradaxoar swooped down and ripped the Slime Blob apart! It started healing... but the Terradaxoar grabbed the pieces and dropped them in five different oceans! Good luck healing back together THAT far apart!' }
+  };
+
+  function getBattleKey(a, b) {
+    const ids = Object.keys(monsterData);
+    return ids.indexOf(a) < ids.indexOf(b) ? a + '_' + b : b + '_' + a;
+  }
+
+  let battlePick1 = null;
+  let battlePick2 = null;
+
+  function openBattle() {
+    battlePick1 = null;
+    battlePick2 = null;
+    document.getElementById('battleModal').classList.add('active');
+    document.getElementById('battlePickPhase').style.display = 'block';
+    document.getElementById('battleStoryPhase').style.display = 'none';
+    updateBattlePicks();
+    playSpookySound('page');
+  }
+
+  function pickBattleMonster(id) {
+    if (!battlePick1) {
+      battlePick1 = id;
+    } else if (!battlePick2 && id !== battlePick1) {
+      battlePick2 = id;
+    } else if (id === battlePick1) {
+      battlePick1 = battlePick2;
+      battlePick2 = null;
+    } else if (id === battlePick2) {
+      battlePick2 = null;
+    }
+    updateBattlePicks();
+  }
+
+  function updateBattlePicks() {
+    document.querySelectorAll('.battle-pick').forEach(el => {
+      const id = el.dataset.monster;
+      el.classList.toggle('selected1', id === battlePick1);
+      el.classList.toggle('selected2', id === battlePick2);
+    });
+    const btn = document.getElementById('battleGoBtn');
+    btn.disabled = !(battlePick1 && battlePick2);
+    const slot1 = document.getElementById('battleSlot1');
+    const slot2 = document.getElementById('battleSlot2');
+    slot1.textContent = battlePick1 ? monsterData[battlePick1].name : '???';
+    slot2.textContent = battlePick2 ? monsterData[battlePick2].name : '???';
+  }
+
+  function runBattle() {
+    if (!battlePick1 || !battlePick2) return;
+    const key = getBattleKey(battlePick1, battlePick2);
+    const result = battleMatchups[key];
+    if (!result) return;
+
+    const m1 = monsterData[battlePick1];
+    const m2 = monsterData[battlePick2];
+    const winner = monsterData[result.winner];
+
+    document.getElementById('battleFighter1Img').src = m1.img;
+    document.getElementById('battleFighter1Name').textContent = m1.name;
+    document.getElementById('battleFighter2Img').src = m2.img;
+    document.getElementById('battleFighter2Name').textContent = m2.name;
+    document.getElementById('battleSceneImg').src = result.img;
+    document.getElementById('battleNarration').textContent = result.story;
+    document.getElementById('battleWinnerImg').src = winner.img;
+    document.getElementById('battleWinnerName').textContent = winner.name + ' WINS!';
+
+    document.getElementById('battlePickPhase').style.display = 'none';
+    document.getElementById('battleStoryPhase').style.display = 'block';
+
+    // Animate the VS
+    const vs = document.getElementById('battleVS');
+    vs.classList.remove('battle-clash');
+    void vs.offsetWidth;
+    vs.classList.add('battle-clash');
+
+    playSpookySound('zombie');
+  }
 
   // ===== EXPLOSION PARTICLE SYSTEM =====
   function runExplosion() {
@@ -950,7 +1202,7 @@
     const cy = canvas.height / 2;
 
     // Create wood chunks, green slime, and sparks
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 50; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 3 + Math.random() * 12;
       const type = Math.random();
@@ -989,7 +1241,7 @@
     }
 
     // Smoke particles (slower, bigger, darker)
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 15; i++) {
       const angle = Math.random() * Math.PI * 2;
       const r = 30+Math.random()*40, g = Math.random()*30, b = Math.random()*20;
       particles.push({
