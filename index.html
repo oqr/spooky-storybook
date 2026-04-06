@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Spooky Scope - A Monster Story by Evan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Griffy&display=swap">
+<script src="https://js.puter.com/v2/" defer></script>
+<style>
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050005;
+    color: #e0e0e0;
+    font-family: 'Griffy', cursive;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== DRIPPING BLOOD HEADER ===== */
+  .blood-header {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 100px; z-index: 100; pointer-events: none;
+  }
+  .blood-bar {
+    width: 100%; height: 22px;
+    background: linear-gradient(90deg, #5a0000, #8b0000, #cc0000, #8b0000, #5a0000);
+    box-shadow: 0 0 30px rgba(139,0,0,0.9), 0 0 60px rgba(139,0,0,0.5);
+  }
+  .blood-drips { display: flex; justify-content: space-around; padding: 0 5px; }
+  .drip {
+    width: 10px;
+    height: var(--drip-height, 60px);
+    background: linear-gradient(to bottom, #8b0000, #cc0000, #660000);
+    border-radius: 0 0 50% 50%;
+    animation: dripping var(--drip-duration, 3s) ease-in infinite;
+    animation-delay: var(--drip-delay, 0s);
+    transform-origin: top;
+    box-shadow: 0 0 6px rgba(204,0,0,0.6);
+  }
+  @keyframes dripping {
+    0% { transform: scaleY(0); opacity: 1; }
+    70% { transform: scaleY(1); opacity: 1; }
+    85% { transform: scaleY(1); opacity: 0.6; }
+    100% { transform: scaleY(0); opacity: 0; }
+  }
+
+  /* ===== FOG ===== */
+  .fog, .fog2 {
+    position: fixed; bottom: 0; left: -10%; width: 120%;
+    pointer-events: none; z-index: 50;
+  }
+  .fog {
+    height: 250px;
+    background: linear-gradient(to top, rgba(50,0,80,0.4), transparent);
+    animation: fogDrift 8s ease-in-out infinite alternate;
+  }
+  .fog2 {
+    height: 150px;
+    background: linear-gradient(to top, rgba(100,0,0,0.2), transparent);
+    animation: fogDrift 12s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes fogDrift {
+    0% { transform: translateX(-5%); opacity: 0.7; }
+    100% { transform: translateX(5%); opacity: 0.3; }
+  }
+
+  /* ===== FLOATING PARTICLES ===== */
+  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 51; overflow: hidden; }
+  .particle {
+    position: absolute; width: 4px; height: 4px;
+    border-radius: 50%;
+    animation: floatUp var(--float-duration, 6s) linear infinite;
+    animation-delay: var(--float-delay, 0s);
+    left: var(--float-x, 50%);
+  }
+  .particle.green { background: rgba(0,255,100,0.5); }
+  .particle.red { background: rgba(255,0,0,0.4); }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+  }
+
+  /* ===== SCREEN FLASH ===== */
+  .flash-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    pointer-events: none; opacity: 0;
+  }
+  .flash-overlay.flash-red {
+    background: rgba(200,0,0,0.5);
+    animation: flashBang 0.4s ease;
+  }
+  .flash-overlay.flash-green {
+    background: rgba(0,200,0,0.4);
+    animation: flashBang 0.3s ease;
+  }
+  @keyframes flashBang {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  .title-screen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center;
+    height: 100%; width: 100%;
+    padding: 10px 20px 20px; text-align: center;
+  }
+  .title-screen h1 {
+    font-family: 'Creepster', cursive;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: #cc0000;
+    text-shadow: 0 0 10px rgba(204,0,0,0.8), 0 0 30px rgba(204,0,0,0.5),
+      0 0 60px rgba(204,0,0,0.3), 3px 3px 0 #2a0000;
+    margin-bottom: 10px;
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%,100% { text-shadow: 0 0 10px rgba(204,0,0,0.8), 0 0 30px rgba(204,0,0,0.5), 3px 3px 0 #2a0000; transform: scale(1); }
+    50% { text-shadow: 0 0 20px rgba(204,0,0,1), 0 0 50px rgba(204,0,0,0.7), 0 0 80px rgba(204,0,0,0.4), 3px 3px 0 #2a0000; transform: scale(1.02); }
+  }
+  .title-screen .subtitle {
+    font-family: 'Griffy', cursive;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    color: #7b68ee; margin-bottom: 30px; opacity: 0.9;
+  }
+  .title-screen .author {
+    font-size: 1.1rem; color: #00cc66; margin-bottom: 40px;
+    text-shadow: 0 0 10px rgba(0,204,102,0.5);
+  }
+
+  /* ===== MONSTER GALLERY ===== */
+  .monster-gallery {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; max-width: 900px; width: 100%; margin-bottom: 15px; flex-shrink: 1;
+  }
+  .monster-card {
+    background: rgba(30,0,50,0.6); border: 2px solid #5a2d82;
+    border-radius: 16px; padding: 12px; text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s; cursor: default;
+  }
+  .monster-card:hover {
+    transform: scale(1.05) rotate(-1deg);
+    box-shadow: 0 0 25px rgba(204,0,0,0.4);
+  }
+  .monster-card img {
+    width: 100%; aspect-ratio: 1; object-fit: cover;
+    border-radius: 10px; margin-bottom: 8px;
+    filter: brightness(0.9) contrast(1.1);
+  }
+  .monster-card .name { font-family: 'Creepster', cursive; font-size: 1.1rem; color: #cc0000; }
+  .monster-card .power { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+
+  /* ===== BUTTONS ===== */
+  .start-btn {
+    font-family: 'Creepster', cursive; font-size: clamp(1.3rem, 2.5vw, 2rem); color: #fff;
+    background: linear-gradient(135deg, #5a0000, #8b0000, #cc0000);
+    border: 3px solid #ff3333; border-radius: 20px;
+    padding: 16px 50px; cursor: pointer;
+    text-shadow: 2px 2px 0 #2a0000;
+    box-shadow: 0 0 20px rgba(204,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+    transition: all 0.3s; animation: btnPulse 2s ease-in-out infinite;
+  }
+  .start-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px rgba(204,0,0,0.8); }
+  @keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 20px rgba(204,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3); }
+    50% { box-shadow: 0 0 40px rgba(204,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.3); }
+  }
+
+  /* ===== STORY PAGES ===== */
+  .page {
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center;
+    height: 100vh; overflow: hidden;
+    padding: 30px 20px 20px;
+    animation: fadeIn 0.8s ease;
+  }
+  .page.active { display: flex; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== STORY IMAGE ===== */
+  .story-image-container {
+    width: auto; max-width: 85vw;
+    max-height: 35vh;
+    margin-bottom: 10px;
+    position: relative; border-radius: 16px; overflow: hidden;
+    border: 3px solid #5a2d82;
+    box-shadow: 0 0 30px rgba(90,45,130,0.4), 0 0 60px rgba(139,0,0,0.2);
+    flex-shrink: 1;
+  }
+  .story-image-container img {
+    max-width: 100%; max-height: 35vh; object-fit: contain; display: block;
+    animation: imageAppear 1s ease;
+    filter: contrast(1.1) brightness(0.95);
+  }
+  @keyframes imageAppear {
+    from { opacity: 0; transform: scale(0.95); filter: brightness(0); }
+    to { opacity: 1; transform: scale(1); filter: brightness(0.95) contrast(1.1); }
+  }
+  .story-image-container::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+  }
+
+  /* ===== STORY TEXT ===== */
+  .story-text {
+    max-width: 85vw; width: 100%;
+    font-size: clamp(0.8rem, 1.4vw, 1.2rem); line-height: 1.4;
+    color: #ddd; text-align: center; margin-bottom: 8px; padding: 12px 24px;
+    background: rgba(20,0,40,0.6); border-radius: 16px;
+    border: 1px solid rgba(139,0,0,0.3);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .story-text .highlight {
+    color: #ff2222; font-family: 'Creepster', cursive; font-size: 1.15em;
+    text-shadow: 0 0 8px rgba(255,0,0,0.5);
+  }
+  .story-text .glow-green {
+    color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.6);
+  }
+  .story-text .glow-purple {
+    color: #bb88ff; text-shadow: 0 0 10px rgba(153,102,255,0.6);
+  }
+  .story-text .big-text {
+    font-family: 'Creepster', cursive; font-size: 2em; color: #ff0000;
+    text-shadow: 0 0 15px rgba(255,0,0,0.8), 0 0 30px rgba(255,0,0,0.4);
+    display: block; margin: 10px 0;
+  }
+
+  /* ===== SPEAK BUTTON ===== */
+  .speak-btn {
+    background: rgba(90,45,130,0.4); border: 2px solid #7b68ee;
+    color: #ccc; font-family: 'Griffy', cursive; font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    padding: 6px 18px; border-radius: 30px; cursor: pointer;
+    margin-bottom: 8px; transition: all 0.3s; flex-shrink: 0;
+  }
+  .speak-btn:hover { background: rgba(90,45,130,0.7); color: #fff; }
+  .speak-btn.loading { opacity: 0.6; pointer-events: none; }
+  .speak-btn.playing { background: rgba(204,0,0,0.5); border-color: #cc0000; color: #fff; }
+
+  /* ===== CHOICE BUTTONS ===== */
+  .choices { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 85vw; flex-shrink: 0; }
+  .choice-btn {
+    font-family: 'Creepster', cursive;
+    font-size: clamp(1.2rem, 2.5vw, 2rem); color: #fff;
+    background: linear-gradient(135deg, rgba(40,0,0,0.8), rgba(80,0,20,0.8));
+    border: 2px solid #cc3333; border-radius: 16px;
+    padding: 12px 20px; cursor: pointer; transition: all 0.3s;
+    text-shadow: 1px 1px 0 #1a0000;
+  }
+  .choice-btn:hover {
+    transform: translateX(8px); border-color: #ff0000;
+    box-shadow: 0 0 25px rgba(255,0,0,0.5);
+    background: linear-gradient(135deg, rgba(80,0,0,0.9), rgba(120,0,20,0.9));
+  }
+
+  .next-btn {
+    font-family: 'Creepster', cursive; font-size: clamp(1.1rem, 1.8vw, 1.6rem); color: #fff;
+    background: linear-gradient(135deg, #2a0020, #5a0030);
+    border: 2px solid #cc3333; border-radius: 16px;
+    padding: 10px 30px; cursor: pointer; transition: all 0.3s; margin-top: 4px; flex-shrink: 0;
+  }
+  .next-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(204,0,0,0.5); }
+
+  .restart-btn {
+    font-family: 'Creepster', cursive; font-size: 1.6rem; color: #fff;
+    background: linear-gradient(135deg, #8b0000, #cc0000);
+    border: 3px solid #ff3333; border-radius: 20px;
+    padding: 16px 50px; cursor: pointer; margin-top: 20px; transition: all 0.3s;
+  }
+  .restart-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(204,0,0,0.6); }
+
+  /* ===== SHAKE & RUMBLE ===== */
+  .shake { animation: shake 0.5s ease; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .mega-shake { animation: megaShake 0.8s ease; }
+  @keyframes megaShake {
+    0%,100% { transform: translate(0,0) rotate(0); }
+    10% { transform: translate(-15px,5px) rotate(-1deg); }
+    20% { transform: translate(15px,-5px) rotate(1deg); }
+    30% { transform: translate(-12px,8px) rotate(-2deg); }
+    40% { transform: translate(12px,-8px) rotate(2deg); }
+    50% { transform: translate(-8px,4px) rotate(-1deg); }
+    60% { transform: translate(8px,-4px) rotate(1deg); }
+    70% { transform: translate(-5px,2px) rotate(0); }
+    80% { transform: translate(5px,-2px) rotate(0); }
+  }
+
+  /* ===== SOUND TOGGLE ===== */
+  .sound-toggle {
+    position: fixed; top: 24px; right: 20px; z-index: 200;
+    font-size: 1.8rem; background: rgba(0,0,0,0.7);
+    border: 2px solid #5a2d82; border-radius: 50%;
+    width: 50px; height: 50px; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; transition: all 0.3s;
+  }
+  .sound-toggle:hover { background: rgba(90,45,130,0.5); }
+
+  /* ===== MONSTER MODAL ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.9); z-index: 300;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: linear-gradient(135deg, #1a0033, #0a0015);
+    border: 3px solid #cc0000; border-radius: 20px;
+    padding: 30px; max-width: 400px; width: 100%; text-align: center;
+    box-shadow: 0 0 40px rgba(204,0,0,0.3);
+  }
+  .modal-box img {
+    width: 200px; height: 200px; object-fit: cover;
+    border-radius: 12px; margin-bottom: 16px;
+    border: 2px solid #5a2d82;
+  }
+  .modal-box h2 { font-family: 'Creepster', cursive; color: #ff2222; font-size: 1.8rem; margin-bottom: 8px; }
+  .modal-box .power { color: #00ff66; font-size: 1.1rem; margin-bottom: 8px; }
+  .modal-box .weakness { color: #ff6666; font-size: 0.95rem; margin-bottom: 16px; }
+  .modal-close {
+    font-family: 'Creepster', cursive; font-size: 1.2rem;
+    background: #5a0020; color: #fff; border: 2px solid #cc3333;
+    padding: 10px 30px; border-radius: 12px; cursor: pointer;
+  }
+
+  /* ===== EXPLOSION CANVAS ===== */
+  .explosion-wrapper {
+    position: relative;
+    width: auto; max-width: 85vw; max-height: 35vh;
+    margin-bottom: 10px; flex-shrink: 1;
+  }
+  .explosion-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 10; border-radius: 16px;
+  }
+  .explosion-wrapper .story-image-container { margin-bottom: 0; }
+
+  /* Zombie entrance animation */
+  .zombie-rise {
+    animation: zombieRise 2s ease-out;
+  }
+  @keyframes zombieRise {
+    0% { transform: translateY(60%) scale(0.7); filter: brightness(0); }
+    40% { filter: brightness(0.3); }
+    70% { transform: translateY(-5%) scale(1.02); }
+    100% { transform: translateY(0) scale(1); filter: brightness(0.95) contrast(1.1); }
+  }
+
+  /* Pulsing glow for scary pages */
+  .pulse-red {
+    animation: pulseRed 2s ease-in-out infinite;
+  }
+  @keyframes pulseRed {
+    0%,100% { box-shadow: 0 0 30px rgba(90,45,130,0.4), 0 0 60px rgba(139,0,0,0.2); }
+    50% { box-shadow: 0 0 50px rgba(255,0,0,0.5), 0 0 80px rgba(139,0,0,0.4); }
+  }
+</style>
+</head>
+<body>
+
+<!-- DRIPPING BLOOD -->
+<div class="blood-header">
+  <div class="blood-bar"></div>
+  <div class="blood-drips" id="bloodDrips"></div>
+</div>
+
+<!-- FOG -->
+<div class="fog"></div>
+<div class="fog2"></div>
+
+<!-- FLOATING PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- SCREEN FLASH -->
+<div class="flash-overlay" id="flashOverlay"></div>
+
+<!-- SOUND TOGGLE -->
+<button class="sound-toggle" id="soundToggle" title="Toggle Sound">🔊</button>
+
+<!-- ==================== TITLE SCREEN ==================== -->
+<div class="page active" id="title">
+  <div class="title-screen">
+    <h1>The Spooky Scope</h1>
+    <div class="subtitle">A Monster Story by Evan</div>
+    <div class="author">Tap a monster to learn about it!</div>
+
+    <div class="monster-gallery">
+      <div class="monster-card" onclick="showMonsterInfo('spider')">
+        <img src="images/spider-scope.png" alt="Spider Scope" loading="lazy">
+        <div class="name">Spider Scope</div>
+        <div class="power">Can see the invisible!</div>
+      </div>
+      <div class="monster-card" onclick="showMonsterInfo('belly')">
+        <img src="images/belly-bonker.png" alt="Belly Bonker" loading="lazy">
+        <div class="name">Belly Bonker</div>
+        <div class="power">Belly eye sees all!</div>
+      </div>
+      <div class="monster-card" onclick="showMonsterInfo('tree')">
+        <img src="images/tree-surpriser.png" alt="Tree Surpriser" loading="lazy">
+        <div class="name">Tree Surpriser</div>
+        <div class="power">Eats by surprise!</div>
+      </div>
+      <div class="monster-card" onclick="showMonsterInfo('rock')">
+        <img src="images/rock-person.png" alt="Rock Person" loading="lazy">
+        <div class="name">Rock Person</div>
+        <div class="power">Invisible to almost all!</div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startStory()">Enter the Dark Forest...</button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 1: INTRO ==================== -->
+<div class="page" id="page1">
+  <div class="story-image-container">
+    <img src="images/dark-forest.png" alt="A dark spooky forest" loading="lazy" loading="lazy">
+  </div>
+  <div class="story-text">
+    In the <span class="glow-purple">darkest part of the world</span>, where the sun never shines, there is a forest that no one goes into. The trees drip with black slime. And if you listen closely... you can hear something <span class="glow-green">breathing</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page2')">What lives in there? ➜</button>
+</div>
+
+<!-- ==================== PAGE 2: SPIDER SCOPE ==================== -->
+<div class="page" id="page2">
+  <div class="story-image-container">
+    <img src="images/spider-scope.png" alt="Spider Scope" loading="lazy">
+  </div>
+  <div class="story-text">
+    Deep in the shadows crawled the <span class="highlight">Spider Scope</span>. A twisted purple spider with a magical <span class="glow-green">telescope scope</span> bolted to its head. The scope could see things hidden from every other creature, especially the <span class="glow-purple">Rock Person</span>, who was invisible to everyone else.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page3')">What else lurks here? ➜</button>
+</div>
+
+<!-- ==================== PAGE 3: BELLY BONKER ==================== -->
+<div class="page" id="page3">
+  <div class="story-image-container">
+    <img src="images/belly-bonker.png" alt="Belly Bonker" loading="lazy">
+  </div>
+  <div class="story-text">
+    Then the ground started to <span class="highlight">SHAKE</span>. The <span class="highlight">Belly Bonker</span> stepped out of the darkness. HUGE. Dark shaggy fur, claws that could tear through rock, and in its belly... a <span class="glow-green">glowing green EYE</span> that never blinked. That eye could see almost anything. But there was ONE thing it could never see: the <span class="glow-purple">Rock Person</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page4')">Something bad is about to happen... ➜</button>
+</div>
+
+<!-- ==================== PAGE 4: THE ATTACK ==================== -->
+<div class="page" id="page4">
+  <div class="story-image-container" id="attackImage">
+    <img src="images/belly-bonker-attacks.png" alt="Belly Bonker attacks!" loading="lazy">
+  </div>
+  <div class="story-text">
+    One terrible night, the <span class="highlight">Belly Bonker</span> came crashing through the trees! Its belly eye burned <span class="highlight">angry red</span>. It wanted to <span class="big-text">DESTROY</span> the Spider Scope! It swung its massive claws. Trees shattered. The Spider Scope tried to run, but the Belly Bonker was too fast!
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <div class="choices">
+    <button class="choice-btn" onclick="goToPage('page5a')">🌳 Something in the forest is watching...</button>
+    <button class="choice-btn" onclick="goToPage('page5b')">👁️ Spider Scope uses its scope to find help!</button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 5A: TREE SURPRISER ==================== -->
+<div class="page" id="page5a">
+  <div class="story-image-container">
+    <img src="images/tree-surpriser.png" alt="Tree Surpriser" loading="lazy">
+  </div>
+  <div class="story-text">
+    But one of the trees behind it started to <span class="glow-green">move</span>. Bark cracked. Eyes appeared. Then a mouth. Then ANOTHER mouth. Then <span class="highlight">THREE</span> mouths, all full of teeth sharp as swords. The <span class="highlight">Tree Surpriser</span>. And it was <span class="glow-green">STARVING</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page6a')">CHOMP! ➜</button>
+</div>
+
+<!-- ==================== PAGE 5B: SPIDER SCOPE FINDS ROCK ==================== -->
+<div class="page" id="page5b">
+  <div class="story-image-container">
+    <img src="images/spider-scope-sees-rock.png" alt="Spider Scope sees Rock Person" loading="lazy">
+  </div>
+  <div class="story-text">
+    The Spider Scope aimed its magical scope into the darkness and found the <span class="glow-purple">Rock Person</span> hiding right next to the Belly Bonker! "HELP ME!" screamed the Spider Scope. The Rock Person could hear everything, but the Belly Bonker couldn't see it. The Rock Person was <span class="glow-green">completely invisible</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <div class="choices">
+    <button class="choice-btn" onclick="goToPage('page6b')">🪨 Rock Person trips the Belly Bonker!</button>
+    <button class="choice-btn" onclick="goToPage('page5a')">🌳 Rock Person wakes up the Tree Surpriser!</button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 6A: TREE EATS BELLY BONKER ==================== -->
+<div class="page" id="page6a">
+  <div class="story-image-container" id="eatScene">
+    <img src="images/tree-eats-belly.png" alt="Tree Surpriser eats Belly Bonker!" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">SURPRISE!!!</span>
+    The Tree Surpriser opened ALL THREE of its horrible mouths and <span class="highlight">CHOMPED</span> down on the Belly Bonker! The whole Belly Bonker disappeared inside the tree! Swallowed whole! The forest went quiet. The Spider Scope thought it was safe...
+    <br><br>
+    But then... the Tree Surpriser started to <span class="glow-green">shake</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page7')">What's happening?! ➜</button>
+</div>
+
+<!-- ==================== PAGE 6B: ROCK TRIPS BELLY ==================== -->
+<div class="page" id="page6b">
+  <div class="story-image-container">
+    <img src="images/rock-person.png" alt="Rock Person" loading="lazy">
+  </div>
+  <div class="story-text">
+    The <span class="glow-purple">Rock Person</span> rolled right under the Belly Bonker's feet! The Belly Bonker couldn't see it coming. It <span class="highlight">TRIPPED</span> and went flying through the air, crashing straight into the biggest tree in the forest. But that wasn't a tree... it was the <span class="highlight">Tree Surpriser</span>. And the Tree Surpriser was VERY, VERY hungry...
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page6a')">Oh no... ➜</button>
+</div>
+
+<!-- ==================== PAGE 7: BELLY BONKER GROWS INSIDE ==================== -->
+<div class="page" id="page7">
+  <div class="story-image-container" id="growScene">
+    <img src="images/tree-eats-belly.png" alt="Something is wrong..." loading="lazy">
+  </div>
+  <div class="story-text">
+    Something was <span class="highlight">WRONG</span>. Inside the Tree Surpriser, the Belly Bonker's eye glowed brighter and brighter. It wasn't dying. It was getting <span class="highlight">BIGGER</span>. The trunk started to crack. Green ooze leaked out. The Tree Surpriser screamed a horrible wooden scream...
+    <br>
+    <span class="glow-green">CRACK... CRACK... CRACK...</span>
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page8')">💥 IT'S GONNA BLOW!!! ➜</button>
+</div>
+
+<!-- ==================== PAGE 8: EXPLOSION!!! ==================== -->
+<div class="page" id="page8">
+  <div class="explosion-wrapper" id="explosionWrapper">
+    <div class="story-image-container pulse-red" id="explosionScene">
+      <img src="images/belly-explodes-tree.png" alt="EXPLOSION!!!" loading="lazy">
+    </div>
+    <canvas class="explosion-canvas" id="explosionCanvas"></canvas>
+  </div>
+  <div class="story-text">
+    <span class="big-text">BOOOOOOM!!!</span>
+    The Belly Bonker <span class="highlight">EXPLODED</span> out of the Tree Surpriser!!! The tree blew apart into a million pieces! Wood and green slime flew everywhere! The Belly Bonker ripped it apart from the INSIDE!
+    <br>
+    The Tree Surpriser was <span class="highlight">DEAD.</span>
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page9')">Is it over? ➜</button>
+</div>
+
+<!-- ==================== PAGE 9: DEAD TREE, BUT WAIT... ==================== -->
+<div class="page" id="page9">
+  <div class="story-image-container">
+    <img src="images/dead-tree.png" alt="Dead Tree Surpriser" loading="lazy">
+  </div>
+  <div class="story-text">
+    The Tree Surpriser lay on the ground, split open and oozing. The Belly Bonker stood over it, belly eye glowing with victory. But then the Spider Scope looked through its scope and saw something that made its blood run cold...
+    <br>
+    <span class="glow-green">The other trees were moving.</span>
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page10')">No... no no no... ➜</button>
+</div>
+
+<!-- ==================== PAGE 10: FOREST OF TREE SURPRISERS ==================== -->
+<div class="page" id="page10">
+  <div class="story-image-container" id="forestScene">
+    <img src="images/forest-of-trees.png" alt="Tree Surprisers EVERYWHERE" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">THEY WERE ALL TREE SURPRISERS.</span>
+    Every single tree had <span class="glow-green">glowing eyes</span> and <span class="highlight">mouths full of teeth</span>. HUNDREDS of them. ALL waking up. ALL hungry. The Spider Scope and Belly Bonker were completely <span class="highlight">SURROUNDED</span>.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page11')">Then the ground started shaking... ➜</button>
+</div>
+
+<!-- ==================== PAGE 11: THE GIANT ZOMBIE ==================== -->
+<div class="page" id="page11">
+  <div class="story-image-container pulse-red" id="zombieScene">
+    <img id="zombieImg" src="images/giant-zombie.png" alt="GIANT ZOMBIE!!!" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">BOOOOM. BOOOOM. BOOOOM.</span>
+    The ground cracked open. Something MASSIVE crawled out. A <span class="highlight">GIANT ZOMBIE</span> the size of a building! Rotting green flesh, glowing red eyes, bones sticking through skin. It opened its mouth and let out a roar so loud it shook every tree in the forest...
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <div class="choices">
+    <button class="choice-btn" onclick="goToPage('page12a')">💀 The zombie fights the Tree Surprisers!</button>
+    <button class="choice-btn" onclick="goToPage('page12b')">🕷️ Spider Scope, Belly Bonker, and the zombie team up!</button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 12A: ZOMBIE VS TREES ==================== -->
+<div class="page" id="page12a">
+  <div class="story-image-container">
+    <img src="images/zombie-vs-all.png" alt="EPIC BATTLE!" loading="lazy">
+  </div>
+  <div class="story-text">
+    The Giant Zombie swung its enormous fists and <span class="highlight">SMASHED</span> through the Tree Surprisers like they were toothpicks! Trees exploded! Green ooze sprayed everywhere! The Spider Scope and the Belly Bonker hid behind a rock and watched the zombie tear through the forest like a wrecking ball!
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page13')">Then what happened? ➜</button>
+</div>
+
+<!-- ==================== PAGE 12B: TEAM UP ==================== -->
+<div class="page" id="page12b">
+  <div class="story-image-container">
+    <img src="images/zombie-smash.png" alt="TEAM UP!" loading="lazy">
+  </div>
+  <div class="story-text">
+    The Spider Scope, the Belly Bonker, and the Giant Zombie looked at each other. They used to be enemies. But now they had a bigger problem. The Belly Bonker's eye glowed. The Spider Scope aimed its scope. The zombie cracked its knuckles. They charged into battle <span class="highlight">TOGETHER</span> and smashed every last Tree Surpriser into sawdust!
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('page13')">After the battle... ➜</button>
+</div>
+
+<!-- ==================== PAGE 13: THE BATTLE IS OVER ==================== -->
+<div class="page" id="page13">
+  <div class="story-image-container">
+    <img src="images/sunrise-forest.png" alt="The sun rises over the destroyed forest" loading="lazy">
+  </div>
+  <div class="story-text">
+    When it was finally over, every Tree Surpriser was gone. The forest was covered in green slime and splinters. The first light of sunrise crept through the broken trees. The Giant Zombie let out one last roar, then sank back into the ground. The Belly Bonker's eye dimmed to a soft glow. And the Spider Scope looked through its magical scope one last time... just to make sure nothing else was hiding.
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="next-btn" onclick="goToPage('ending')">The end... ➜</button>
+</div>
+
+<!-- ==================== ENDING ==================== -->
+<div class="page" id="ending">
+  <div class="story-image-container">
+    <img src="images/spider-scope.png" alt="Spider Scope watches over the forest" loading="lazy">
+  </div>
+  <div class="story-text">
+    The forest was quiet again. The <span class="glow-green">Spider Scope</span> crawled to the top of the tallest hill and kept watch. The <span class="glow-purple">Rock Person</span> settled back into the ground, invisible as always. And somewhere deep below, the <span class="highlight">Belly Bonker</span> and the <span class="highlight">Giant Zombie</span> slept, waiting for the next time the forest needed them.
+    <br><br>
+    <span class="big-text">THE END</span>
+    <span class="glow-green">A story by Evan</span>
+  </div>
+  <button class="speak-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+  <button class="restart-btn" onclick="restart()">Read Again? 🦇</button>
+</div>
+
+<!-- ==================== MONSTER INFO MODAL ==================== -->
+<div class="modal-overlay" id="monsterModal" onclick="this.classList.remove('active')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <img id="modalImg" src="" alt="Monster info">
+    <h2 id="modalName"></h2>
+    <p class="power" id="modalPower"></p>
+    <p class="weakness" id="modalWeakness"></p>
+    <button class="modal-close" onclick="document.getElementById('monsterModal').classList.remove('active')">Close</button>
+  </div>
+</div>
+
+<script>
+  // ===== BLOOD DRIPS =====
+  const dripsContainer = document.getElementById('bloodDrips');
+  for (let i = 0; i < 40; i++) {
+    const drip = document.createElement('div');
+    drip.className = 'drip';
+    drip.style.setProperty('--drip-duration', (1.5 + Math.random() * 4) + 's');
+    drip.style.setProperty('--drip-delay', (Math.random() * 5) + 's');
+    drip.style.setProperty('--drip-height', (20 + Math.random() * 100) + 'px');
+    dripsContainer.appendChild(drip);
+  }
+
+  // ===== FLOATING PARTICLES =====
+  const particlesContainer = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle ' + (Math.random() > 0.5 ? 'green' : 'red');
+    p.style.setProperty('--float-duration', (4 + Math.random() * 8) + 's');
+    p.style.setProperty('--float-delay', (Math.random() * 10) + 's');
+    p.style.setProperty('--float-x', (Math.random() * 100) + '%');
+    particlesContainer.appendChild(p);
+  }
+
+  // ===== SCREEN FLASH =====
+  function flashScreen(color) {
+    const overlay = document.getElementById('flashOverlay');
+    overlay.className = 'flash-overlay';
+    void overlay.offsetWidth;
+    overlay.classList.add('flash-' + color);
+    setTimeout(() => overlay.className = 'flash-overlay', 500);
+  }
+
+  // ===== SOUND EFFECTS =====
+  let soundEnabled = true;
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  document.getElementById('soundToggle').addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  });
+
+  function playSpookySound(type) {
+    if (!soundEnabled) return;
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const t = ctx.currentTime;
+
+    if (type === 'page') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, t);
+      osc.frequency.exponentialRampToValueAtTime(60, t + 0.6);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+      osc.start(); osc.stop(t + 0.6);
+    } else if (type === 'chomp') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(400, t);
+      osc.frequency.exponentialRampToValueAtTime(30, t + 0.4);
+      gain.gain.setValueAtTime(0.25, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc.start(); osc.stop(t + 0.4);
+    } else if (type === 'explosion') {
+      const bufferSize = ctx.sampleRate * 0.8;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.4, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noise.start();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(80, t);
+      osc.frequency.exponentialRampToValueAtTime(20, t + 1);
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1);
+      osc.start(); osc.stop(t + 1);
+    } else if (type === 'zombie') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(60, t);
+      osc.frequency.linearRampToValueAtTime(40, t + 0.3);
+      osc.frequency.linearRampToValueAtTime(80, t + 0.6);
+      osc.frequency.linearRampToValueAtTime(30, t + 1.2);
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+      osc.start(); osc.stop(t + 1.2);
+    } else if (type === 'start') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, t);
+      osc.frequency.linearRampToValueAtTime(400, t + 0.2);
+      osc.frequency.linearRampToValueAtTime(80, t + 1);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1);
+      osc.start(); osc.stop(t + 1);
+    }
+  }
+
+  // ===== AI TEXT TO SPEECH (ElevenLabs via Puter.js) =====
+  let currentAudio = null;
+  const SPOOKY_VOICE = 'onwK4e9ZLuTAKqWW03F9'; // Daniel - deep British narrator
+
+  function speakText(btn) {
+    if (currentAudio && !currentAudio.paused) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      document.querySelectorAll('.speak-btn.playing').forEach(b => {
+        b.classList.remove('playing');
+        b.textContent = '🔊 Read Aloud';
+      });
+      currentAudio = null;
+      return;
+    }
+
+    const textDiv = btn.previousElementSibling;
+    const text = textDiv.innerText;
+
+    btn.classList.add('loading');
+    btn.textContent = '🔊 Loading spooky voice';
+
+    puter.ai.txt2speech(text, {
+      provider: 'elevenlabs',
+      voice: SPOOKY_VOICE,
+      model: 'eleven_multilingual_v2'
+    })
+    .then(audio => {
+      currentAudio = audio;
+      btn.classList.remove('loading');
+      btn.classList.add('playing');
+      btn.textContent = '⏹️ Stop Reading';
+      audio.play();
+      audio.addEventListener('ended', () => {
+        btn.classList.remove('playing');
+        btn.textContent = '🔊 Read Aloud';
+        currentAudio = null;
+      });
+    })
+    .catch(err => {
+      console.error('AI voice error:', err);
+      btn.classList.remove('loading');
+      btn.textContent = '🔊 Read Aloud';
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 0.85;
+        utter.pitch = 0.7;
+        speechSynthesis.speak(utter);
+      }
+      currentAudio = null;
+    });
+  }
+
+  // ===== PAGE NAVIGATION =====
+  function goToPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Special effects per page
+    if (pageId === 'page6a') {
+      playSpookySound('chomp');
+      document.getElementById('eatScene')?.classList.add('shake');
+      setTimeout(() => document.getElementById('eatScene')?.classList.remove('shake'), 600);
+    } else if (pageId === 'page8') {
+      playSpookySound('explosion');
+      flashScreen('red');
+      document.getElementById('explosionScene')?.classList.add('mega-shake');
+      setTimeout(() => {
+        flashScreen('green');
+        runExplosion();
+        document.getElementById('explosionScene')?.classList.remove('mega-shake');
+      }, 300);
+      setTimeout(() => flashScreen('red'), 600);
+    } else if (pageId === 'page10') {
+      playSpookySound('chomp');
+      flashScreen('green');
+      document.getElementById('forestScene')?.classList.add('shake');
+      setTimeout(() => document.getElementById('forestScene')?.classList.remove('shake'), 600);
+    } else if (pageId === 'page11') {
+      playSpookySound('zombie');
+      flashScreen('red');
+      triggerZombieRise();
+      document.getElementById('zombieScene')?.classList.add('mega-shake');
+      setTimeout(() => {
+        document.getElementById('zombieScene')?.classList.remove('mega-shake');
+        flashScreen('red');
+      }, 1000);
+    } else {
+      playSpookySound('page');
+    }
+  }
+
+  function startStory() {
+    playSpookySound('start');
+    goToPage('page1');
+  }
+
+  function restart() {
+    goToPage('title');
+  }
+
+  // ===== MONSTER INFO =====
+  const monsterData = {
+    spider: { img: 'images/spider-scope.png', name: 'Spider Scope',
+      power: 'Has a magical scope that can see the Rock Person!',
+      weakness: 'The Belly Bonker wants to destroy it!' },
+    belly: { img: 'images/belly-bonker.png', name: 'Belly Bonker',
+      power: 'Belly button eye sees everything... except Rock Person!',
+      weakness: 'Gets eaten by the Tree Surpriser... then EXPLODES out!' },
+    tree: { img: 'images/tree-surpriser.png', name: 'Tree Surpriser',
+      power: 'Looks like a tree. Eats people with no one expecting!',
+      weakness: 'The Belly Bonker grows too big inside and EXPLODES it!' },
+    rock: { img: 'images/rock-person.png', name: 'Rock Person',
+      power: 'Invisible to everyone! Looks just like a rock!',
+      weakness: 'Only the Spider Scope can see it!' }
+  };
+
+  // ===== EXPLOSION PARTICLE SYSTEM =====
+  function runExplosion() {
+    const canvas = document.getElementById('explosionCanvas');
+    const wrapper = document.getElementById('explosionWrapper');
+    if (!canvas || !wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    const ctx = canvas.getContext('2d');
+
+    const particles = [];
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Create wood chunks, green slime, and sparks
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 12;
+      const type = Math.random();
+      let color, size;
+      if (type < 0.3) {
+        // Wood chunks - brown
+        color = `hsl(${25 + Math.random()*15}, ${60+Math.random()*30}%, ${20+Math.random()*25}%)`;
+        size = 4 + Math.random() * 12;
+      } else if (type < 0.6) {
+        // Green slime
+        color = `hsl(${120 + Math.random()*30}, ${80+Math.random()*20}%, ${30+Math.random()*30}%)`;
+        size = 3 + Math.random() * 8;
+      } else if (type < 0.85) {
+        // Red/orange sparks
+        color = `hsl(${Math.random()*30}, 100%, ${50+Math.random()*30}%)`;
+        size = 2 + Math.random() * 5;
+      } else {
+        // Bright flash particles
+        color = '#fff';
+        size = 2 + Math.random() * 4;
+      }
+      particles.push({
+        x: cx + (Math.random()-0.5)*60,
+        y: cy + (Math.random()-0.5)*40,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        size: size,
+        color: color,
+        life: 1,
+        decay: 0.008 + Math.random() * 0.015,
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random()-0.5) * 15,
+        gravity: 0.15 + Math.random() * 0.1,
+        aspect: 0.5 + Math.random() * 0.5
+      });
+    }
+
+    // Smoke particles (slower, bigger, darker)
+    for (let i = 0; i < 25; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const r = 30+Math.random()*40, g = Math.random()*30, b = Math.random()*20;
+      particles.push({
+        x: cx + (Math.random()-0.5)*80,
+        y: cy + (Math.random()-0.5)*60,
+        vx: Math.cos(angle) * (1 + Math.random()*3),
+        vy: Math.sin(angle) * (1 + Math.random()*2) - 1.5,
+        size: 15 + Math.random() * 30,
+        smokeR: r, smokeG: g, smokeB: b,
+        life: 1,
+        decay: 0.005 + Math.random() * 0.008,
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random()-0.5) * 3,
+        gravity: -0.02,
+        isSmoke: true
+      });
+    }
+
+    let frame = 0;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+
+      // Central flash (first few frames)
+      if (frame < 8) {
+        const flashAlpha = (1 - frame/8) * 0.7;
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 150 + frame*20);
+        grad.addColorStop(0, `rgba(255,200,50,${flashAlpha})`);
+        grad.addColorStop(0.3, `rgba(255,80,0,${flashAlpha*0.6})`);
+        grad.addColorStop(1, 'rgba(255,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      for (const p of particles) {
+        if (p.life <= 0) continue;
+        alive = true;
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.vx *= 0.99;
+        p.life -= p.decay;
+        p.rotation += p.rotSpeed;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.globalAlpha = Math.max(0, p.life);
+
+        if (p.isSmoke) {
+          ctx.fillStyle = `rgba(${p.smokeR},${p.smokeG},${p.smokeB},${Math.max(0, p.life * 0.4)})`;
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size * (2 - p.life), 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * p.aspect);
+        }
+
+        ctx.restore();
+      }
+
+      frame++;
+      if (alive && frame < 200) {
+        requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    animate();
+  }
+
+  // ===== ZOMBIE RISE ANIMATION =====
+  function triggerZombieRise() {
+    const img = document.getElementById('zombieImg');
+    if (img) {
+      img.classList.remove('zombie-rise');
+      void img.offsetWidth;
+      img.classList.add('zombie-rise');
+    }
+  }
+
+  function showMonsterInfo(id) {
+    const m = monsterData[id];
+    document.getElementById('modalImg').src = m.img;
+    document.getElementById('modalName').textContent = m.name;
+    document.getElementById('modalPower').textContent = '⚡ ' + m.power;
+    document.getElementById('modalWeakness').textContent = '💀 ' + m.weakness;
+    document.getElementById('monsterModal').classList.add('active');
+    playSpookySound('page');
+  }
+</script>
+
+</body>
+</html>
