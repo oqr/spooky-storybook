@@ -14,7 +14,7 @@ STYLE = "dark fantasy digital art, spooky childrens book illustration, dark atmo
 
 # === MONSTER PORTRAITS ===
 PORTRAITS = {
-    'giant-legs.png': f"a terrifying creature that is ONLY giant muscular purple legs with NO body NO head NO torso, exactly FIVE enormous legs arranged in a star pattern stomping through a dark haunted forest at night, dust clouds from stomping, {STYLE}",
+    'giant-legs.png': f"exactly five enormous muscular purple monster legs growing out of the ground in a circle with NO body NO head NO torso NO face attached, just five disembodied legs standing in a dark haunted forest, each leg is thick and purple with clawed feet, dust clouds from stomping, the legs have no connection at the top just five separate legs, {STYLE}",
     'terradaxoar.png': f"a dark flying monster called Terradaxoar soaring through a night sky, it has exactly FIVE glowing orange eyes arranged in a horizontal row across its wide flat head like a row of five headlights, dark blue-grey bat-like wings spread wide, sharp talons, and a long whip-like tail crackling with blue-white electricity and lightning bolts, menacing, {STYLE}",
     'slime-blob.png': f"a round spiky green slime monster with an evil grin and glowing red eyes, covered in sharp spikes, pieces of it floating nearby reconnecting with green energy lines showing it can regenerate and heal, dark forest background, {STYLE}",
 }
@@ -44,16 +44,25 @@ BATTLES = {
     'battle-terradaxoar-healbeast.png': f"a dark flying monster with exactly FIVE glowing orange eyes in a row across its flat head and an electric lightning tail carrying green slime pieces in different directions over five different oceans, dropping the pieces far apart so they cannot heal back together, epic aerial scene, {STYLE}",
 }
 
+# === PART ONE STORY SCENES (regen candidates) ===
+STORY_SCENES = {
+    'belly-bonker-attacks.png': f"a huge dark purple shaggy furry monster with a bright glowing GREEN eye in its belly attacking a small purple spider creature with a telescope scope bolted to its head, the belly eye glowing bright green, the furry monster swinging massive claws at the spider in a dark forest, {STYLE}",
+    'tree-eats-belly.png': f"a monstrous tree creature with THREE mouths stacked vertically on its trunk opening all three mouths wide and swallowing a large dark purple shaggy furry monster with a glowing green belly eye, the furry monster being pulled into the tree, dark forest scene, {STYLE}",
+    'belly-explodes-tree.png': f"a large dark purple shaggy furry monster with a bright glowing green belly eye BLASTING out through the trunk of a monstrous tree creature, the tree cracking open with green slime and wood flying everywhere, the furry monster emerging from inside the tree trunk, explosive dark forest scene, {STYLE}",
+    'dead-tree.png': f"a monstrous tree creature with three mouths lying on the ground cracked and damaged but still ALIVE, its eyes still open and glowing faintly green, green sap oozing from cracks in its trunk as it slowly heals, dark moody forest floor scene, {STYLE}",
+    'zombie-vs-all.png': f"monstrous tree creatures with glowing eyes and mouths full of teeth charging at a giant zombie, the trees fighting the zombie with whipping branches while a small purple spider with a telescope scope watches from behind a rock, epic dark forest battle, {STYLE}",
+}
+
 # === PART TWO STORY SCENES ===
 PART_TWO = {
-    'p2-villains-hunt.png': f"a green spiky slime blob monster, a dark flying bat monster with glowing eyes and lightning tail, and enormous disembodied purple legs all prowling through a dark forest at night looking hungry, menacing trio of monsters hunting together, {STYLE}",
+    'p2-villains-hunt.png': f"three distinct monsters prowling through a dark forest at night: a round spiky GREEN SLIME BLOB with red eyes and spikes, a dark bat-winged flying creature with glowing orange eyes and blue lightning crackling from its tail in the sky above, and five enormous disembodied purple legs with NO body stomping on the ground, all three hunting together, {STYLE}",
     'p2-too-many-trees.png': f"hundreds of monstrous evil tree creatures with glowing eyes and mouths full of teeth filling an entire dark forest, three small monsters looking overwhelmed and surrounded, {STYLE}",
     'p2-eat-sleepy-tree.png': f"three monsters attacking a single sleepy monstrous tree creature, a slime blob a flying bat creature and giant legs all jumping on the tree and tearing it apart, wood flying everywhere, dark forest, {STYLE}",
-    'p2-too-full-explode.png': f"three monsters with enormously bloated round bellies about to EXPLODE from eating too much, a green slime blob round as a ball, giant legs wobbling, a flying creature too heavy to fly, all about to burst, dark forest with tree debris everywhere, {STYLE}",
+    'p2-too-full-explode.png': f"three distinct monsters about to EXPLODE from eating too much in a destroyed forest full of wood debris: a bloated round GREEN SLIME BLOB with red eyes swollen huge, a dark bat-winged creature with lightning tail too heavy to fly lying on the ground bloated, and five enormous purple disembodied legs wobbling and about to collapse, all three about to burst, {STYLE}",
     'p2-belly-returns.png': f"a dark furry monster with a glowing green belly button eye crawling out of a crack in the ground, a giant zombie stomping nearby eating monster remains, dark dramatic scene, {STYLE}",
-    'p2-five-legs.png': f"a terrifying creature that is ONLY five enormous muscular purple legs arranged in a star pattern with NO body NO head, the legs glowing with energy, bursting out of a giant zombie stomach, dramatic dark scene with debris flying, {STYLE}",
+    'p2-five-legs.png': f"five enormous muscular purple monster legs with NO body NO head NO face NO torso bursting out of the belly of a giant rotting green zombie, the five disembodied legs kicking through the zombie stomach, purple energy glowing, debris and zombie guts flying, dramatic dark scene, {STYLE}",
     'p2-ten-zombies.png': f"TEN giant zombies crawling out of cracks in the ground simultaneously, rotting green flesh and glowing red eyes, the ground splitting open in ten places, apocalyptic dark scene, {STYLE}",
-    'p2-zombies-belly-friends.png': f"eleven giant zombies standing peacefully next to a small dark furry monster with a glowing green belly button eye, they are friends not fighting, the zombies looking down at the small monster fondly, dark forest clearing, {STYLE}",
+    'p2-zombies-belly-friends.png': f"ELEVEN giant rotting green zombies with glowing red eyes standing in a group looking down fondly at a dark purple shaggy furry monster with a bright glowing GREEN EYE in its belly, they are friends not fighting, peaceful moment in a dark forest clearing, the furry belly-eye monster is much smaller than the zombies, {STYLE}",
     'p2-biggest-tree.png': f"the BIGGEST most enormous monstrous tree creature ever seen towering over an entire forest, taller than a skyscraper, with dozens of mouths full of teeth and glowing eyes all over its trunk, roots as thick as cars, eleven tiny zombies charging at its base, epic scale dark fantasy scene, {STYLE}",
     'p2-zombies-feast.png': f"eleven giant zombies tearing apart an enormous monstrous tree creature from every side, ripping branches and eating wood, green slime and wood debris everywhere, epic dark fantasy battle feast scene, {STYLE}",
 }
@@ -100,6 +109,9 @@ def main():
     if '--portraits-only' not in sys.argv:
         print("=== GENERATING BATTLE SCENES ===")
         all_images.update(BATTLES)
+
+    print("=== GENERATING STORY SCENES ===")
+    all_images.update(STORY_SCENES)
 
     print("=== GENERATING PART TWO SCENES ===")
     all_images.update(PART_TWO)
