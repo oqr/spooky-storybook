@@ -14,7 +14,7 @@ STYLE = "dark fantasy digital art, spooky childrens book illustration, dark atmo
 
 # === MONSTER PORTRAITS ===
 PORTRAITS = {
-    'giant-legs.png': f"a terrifying creature that is ONLY giant muscular purple legs with NO body NO head NO torso, just four enormous legs stomping through a dark haunted forest at night, dust clouds from stomping, {STYLE}",
+    'giant-legs.png': f"a terrifying creature that is ONLY giant muscular purple legs with NO body NO head NO torso, exactly FIVE enormous legs arranged in a star pattern stomping through a dark haunted forest at night, dust clouds from stomping, {STYLE}",
     'terradaxoar.png': f"a dark flying monster called Terradaxoar soaring through a night sky, it has exactly FIVE glowing orange eyes arranged in a horizontal row across its wide flat head like a row of five headlights, dark blue-grey bat-like wings spread wide, sharp talons, and a long whip-like tail crackling with blue-white electricity and lightning bolts, menacing, {STYLE}",
     'slime-blob.png': f"a round spiky green slime monster with an evil grin and glowing red eyes, covered in sharp spikes, pieces of it floating nearby reconnecting with green energy lines showing it can regenerate and heal, dark forest background, {STYLE}",
 }
@@ -42,6 +42,20 @@ BATTLES = {
     'battle-giantlegs-terradaxoar.png': f"a dark flying monster with exactly FIVE glowing orange eyes in a row across its flat head and an electric lightning tail attacking enormous disembodied legs from above, diving and striking repeatedly while the legs kick uselessly at the sky, dramatic battle, {STYLE}",
     'battle-giantlegs-healbeast.png': f"enormous disembodied giant legs repeatedly stomping a round green slime blob flat, the slime trying to reform but getting stomped again and again, dark dramatic scene, {STYLE}",
     'battle-terradaxoar-healbeast.png': f"a dark flying monster with exactly FIVE glowing orange eyes in a row across its flat head and an electric lightning tail carrying green slime pieces in different directions over five different oceans, dropping the pieces far apart so they cannot heal back together, epic aerial scene, {STYLE}",
+}
+
+# === PART TWO STORY SCENES ===
+PART_TWO = {
+    'p2-villains-hunt.png': f"a green spiky slime blob monster, a dark flying bat monster with glowing eyes and lightning tail, and enormous disembodied purple legs all prowling through a dark forest at night looking hungry, menacing trio of monsters hunting together, {STYLE}",
+    'p2-too-many-trees.png': f"hundreds of monstrous evil tree creatures with glowing eyes and mouths full of teeth filling an entire dark forest, three small monsters looking overwhelmed and surrounded, {STYLE}",
+    'p2-eat-sleepy-tree.png': f"three monsters attacking a single sleepy monstrous tree creature, a slime blob a flying bat creature and giant legs all jumping on the tree and tearing it apart, wood flying everywhere, dark forest, {STYLE}",
+    'p2-too-full-explode.png': f"three monsters with enormously bloated round bellies about to EXPLODE from eating too much, a green slime blob round as a ball, giant legs wobbling, a flying creature too heavy to fly, all about to burst, dark forest with tree debris everywhere, {STYLE}",
+    'p2-belly-returns.png': f"a dark furry monster with a glowing green belly button eye crawling out of a crack in the ground, a giant zombie stomping nearby eating monster remains, dark dramatic scene, {STYLE}",
+    'p2-five-legs.png': f"a terrifying creature that is ONLY five enormous muscular purple legs arranged in a star pattern with NO body NO head, the legs glowing with energy, bursting out of a giant zombie stomach, dramatic dark scene with debris flying, {STYLE}",
+    'p2-ten-zombies.png': f"TEN giant zombies crawling out of cracks in the ground simultaneously, rotting green flesh and glowing red eyes, the ground splitting open in ten places, apocalyptic dark scene, {STYLE}",
+    'p2-zombies-belly-friends.png': f"eleven giant zombies standing peacefully next to a small dark furry monster with a glowing green belly button eye, they are friends not fighting, the zombies looking down at the small monster fondly, dark forest clearing, {STYLE}",
+    'p2-biggest-tree.png': f"the BIGGEST most enormous monstrous tree creature ever seen towering over an entire forest, taller than a skyscraper, with dozens of mouths full of teeth and glowing eyes all over its trunk, roots as thick as cars, eleven tiny zombies charging at its base, epic scale dark fantasy scene, {STYLE}",
+    'p2-zombies-feast.png': f"eleven giant zombies tearing apart an enormous monstrous tree creature from every side, ripping branches and eating wood, green slime and wood debris everywhere, epic dark fantasy battle feast scene, {STYLE}",
 }
 
 def download_image(name, prompt, retries=2):
@@ -86,6 +100,9 @@ def main():
     if '--portraits-only' not in sys.argv:
         print("=== GENERATING BATTLE SCENES ===")
         all_images.update(BATTLES)
+
+    print("=== GENERATING PART TWO SCENES ===")
+    all_images.update(PART_TWO)
 
     print(f"Total images to generate: {len(all_images)}")
 

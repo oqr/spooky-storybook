@@ -570,7 +570,7 @@
       <div class="monster-card" onclick="showMonsterInfo('giantlegs')">
         <img src="images/giant-legs.png" alt="Giant Legs" loading="lazy">
         <div class="name">Giant Legs</div>
-        <div class="power">Just legs. STOMP!</div>
+        <div class="power">FIVE legs. STOMP!</div>
       </div>
       <div class="monster-card" onclick="showMonsterInfo('terradaxoar')">
         <img src="images/terradaxoar.png" alt="Terradaxoar" loading="lazy">
@@ -819,6 +819,148 @@
     <span class="glow-green">A story by Evan</span>
   </div>
 
+  <div class="title-buttons">
+    <button class="restart-btn" onclick="restart()">Read Again? 🦇</button>
+    <button class="restart-btn battle-btn" onclick="goToPage('p2-1')">Part Two: The Next Day... 🌙</button>
+  </div>
+</div>
+
+<!-- ==================== PART TWO: PAGE 1 - THE HUNT ==================== -->
+<div class="page" id="p2-1">
+  <div class="story-image-container">
+    <img src="images/p2-villains-hunt.png" alt="The villains are hungry" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">THE NEXT DAY...</span>
+    The sun went down and the forest got dark again. The <span class="highlight">Slime Blob</span>, the <span class="highlight">Terradaxoar</span>, and <span class="highlight">Giant Legs</span> woke up. They were <span class="glow-green">STARVING</span>. And they wanted to eat some Tree Surprisers.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-2')">But there were SO many trees... ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 2 - TOO MANY TREES ==================== -->
+<div class="page" id="p2-2">
+  <div class="story-image-container">
+    <img src="images/p2-too-many-trees.png" alt="Too many Tree Surprisers!" loading="lazy">
+  </div>
+  <div class="story-text">
+    There were <span class="highlight">TOO MANY</span> Tree Surprisers! Everywhere they looked, trees with glowing eyes and mouths full of teeth. The Slime Blob only managed to eat <span class="glow-green">ONE</span>. But then they spotted one Tree Surpriser off by itself. It wasn't ready to battle. It was just standing there, sleepy...
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-3')">Get it! ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 3 - THEY EAT THE SLEEPY ONE ==================== -->
+<div class="page" id="p2-3">
+  <div class="story-image-container" id="p2EatScene">
+    <img src="images/p2-eat-sleepy-tree.png" alt="They eat the sleepy tree!" loading="lazy">
+  </div>
+  <div class="story-text">
+    The Slime Blob, the Terradaxoar, and Giant Legs all <span class="highlight">JUMPED</span> on the sleepy Tree Surpriser! It didn't even have time to open its mouths! They tore it apart and ate every last branch! But there were still <span class="glow-green">MORE</span> trees to eat. So they kept going. And going. And <span class="highlight">GOING</span>.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-4')">They ate them ALL?! ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 4 - TOO FULL, EXPLODE ==================== -->
+<div class="page" id="p2-4">
+  <div class="explosion-wrapper" id="p2ExplosionWrapper">
+    <div class="story-image-container pulse-red" id="p2ExplosionScene">
+      <img src="images/p2-too-full-explode.png" alt="They EXPLODED!" loading="lazy">
+    </div>
+    <canvas class="explosion-canvas" id="p2ExplosionCanvas"></canvas>
+  </div>
+  <div class="story-text">
+    They ate <span class="highlight">EVERY. SINGLE. TREE SURPRISER.</span> Their bellies were so full they could barely move. The Slime Blob was round as a basketball. Giant Legs could barely stand. The Terradaxoar couldn't even fly. And then...
+    <br>
+    <span class="big-text">THEY EXPLODED!!!</span>
+    Slime and wood and legs and eyeballs went <span class="highlight">EVERYWHERE</span>.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-5')">Then what crawled out of the ground? ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 5 - BELLY BONKER RETURNS ==================== -->
+<div class="page" id="p2-5">
+  <div class="story-image-container" id="p2BellyScene">
+    <img src="images/p2-belly-returns.png" alt="Belly Bonker comes back!" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">BOOOOM.</span>
+    The ground cracked open and the <span class="highlight">Belly Bonker</span> crawled out! Its belly eye glowed <span class="glow-green">bright green</span>. It looked around at the mess. Bits of Slime Blob, Terradaxoar pieces, and Giant Legs parts were scattered everywhere.
+    <br><br>
+    Then a <span class="highlight">GIANT ZOMBIE</span> stomped over and ate what was left of all three of them! Swallowed the Slime Blob, the Terradaxoar, and the Giant Legs in three huge bites!
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-6')">Wait... Giant Legs looks different! ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 6 - GIANT LEGS GROWS FIVE LEGS ==================== -->
+<div class="page" id="p2-6">
+  <div class="story-image-container">
+    <img src="images/p2-five-legs.png" alt="Giant Legs grows FIVE legs!" loading="lazy">
+  </div>
+  <div class="story-text">
+    But inside the zombie's belly, something was happening. <span class="highlight">Giant Legs</span> was changing. It used to have two legs. Now it was growing more. Three... four... <span class="big-text">FIVE LEGS!!!</span>
+    With five legs, Giant Legs could poop and pee out a <span class="highlight">TON</span> of stuff at the same time. That meant it <span class="glow-green">NEVER got hungry</span>. Ever. It burst right out of the zombie!
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-7')">Then the ground started shaking AGAIN... ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 7 - TEN MORE ZOMBIES ==================== -->
+<div class="page" id="p2-7">
+  <div class="story-image-container pulse-red" id="p2ZombieScene">
+    <img src="images/p2-ten-zombies.png" alt="TEN MORE ZOMBIES!" loading="lazy">
+  </div>
+  <div class="story-text">
+    <span class="big-text">BOOM. BOOM. BOOM. BOOM. BOOM.</span>
+    The ground cracked open in <span class="highlight">TEN</span> different places. <span class="highlight">TEN MORE GIANT ZOMBIES</span> crawled out of the earth! They stomped over to the first zombie and they all looked at each other. They were a <span class="glow-green">TEAM</span>. <span class="highlight">ELEVEN ZOMBIES</span>.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-8')">What did they want to eat?! ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 8 - FRIENDS WITH BELLY BONKER ==================== -->
+<div class="page" id="p2-8">
+  <div class="story-image-container">
+    <img src="images/p2-zombies-belly-friends.png" alt="The zombies and Belly Bonker are friends!" loading="lazy">
+  </div>
+  <div class="story-text">
+    The eleven zombies turned toward the <span class="highlight">Belly Bonker</span>. They wanted to <span class="highlight">FEAST</span>. But wait... the Belly Bonker's eye looked up at them. They remembered. The Belly Bonker and the zombies were <span class="glow-green">good friends</span>. They couldn't eat a friend!
+    <br><br>
+    So the eleven zombies needed to find something <span class="highlight">ELSE</span> to eat.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-9')">There was one tree left... ➜</button>
+</div>
+
+<!-- ==================== PART TWO: PAGE 9 - THE BIGGEST TREE ==================== -->
+<div class="page" id="p2-9">
+  <div class="story-image-container" id="p2BigTreeScene">
+    <img src="images/p2-biggest-tree.png" alt="The BIGGEST Tree Surpriser!" loading="lazy">
+  </div>
+  <div class="story-text">
+    There was still <span class="highlight">ONE</span> more Tree Surpriser. The <span class="big-text">BIGGEST ONE</span> in the entire forest. Taller than a skyscraper. Roots as thick as cars. And it had more mouths than any tree they'd ever seen. But eleven zombies didn't care. They <span class="highlight">CHARGED</span>.
+  </div>
+
+  <button class="next-btn" onclick="goToPage('p2-end')">CHOMP!!! ➜</button>
+</div>
+
+<!-- ==================== PART TWO: ENDING ==================== -->
+<div class="page" id="p2-end">
+  <div class="story-image-container">
+    <img src="images/p2-zombies-feast.png" alt="The zombies feast!" loading="lazy">
+  </div>
+  <div class="story-text">
+    The eleven zombies tore into the biggest Tree Surpriser from every side! They ripped branches, chewed roots, and swallowed everything. The Belly Bonker watched from a safe distance, belly eye glowing softly. When it was over, the biggest tree in the forest was <span class="highlight">GONE</span>.
+    <br><br>
+    The zombies let out eleven <span class="highlight">ROARS</span> that shook the whole world. Then they sank back into the ground, one by one. The Belly Bonker's eye dimmed. The forest was empty and quiet.
+    <br><br>
+    <span class="big-text">THE END</span>
+    <span class="glow-green">Part Two — A story by Evan</span>
+  </div>
+
   <button class="restart-btn" onclick="restart()">Read Again? 🦇</button>
 </div>
 
@@ -1045,6 +1187,36 @@
         document.getElementById('zombieScene')?.classList.remove('mega-shake');
         flashScreen('red');
       }, 1000);
+    } else if (pageId === 'p2-3') {
+      playSpookySound('chomp');
+      document.getElementById('p2EatScene')?.classList.add('shake');
+      setTimeout(() => document.getElementById('p2EatScene')?.classList.remove('shake'), 600);
+    } else if (pageId === 'p2-4') {
+      playSpookySound('explosion');
+      flashScreen('red');
+      document.getElementById('p2ExplosionScene')?.classList.add('mega-shake');
+      setTimeout(() => {
+        flashScreen('green');
+        document.getElementById('p2ExplosionScene')?.classList.remove('mega-shake');
+      }, 300);
+      setTimeout(() => flashScreen('red'), 600);
+    } else if (pageId === 'p2-5') {
+      playSpookySound('zombie');
+      flashScreen('red');
+      document.getElementById('p2BellyScene')?.classList.add('shake');
+      setTimeout(() => document.getElementById('p2BellyScene')?.classList.remove('shake'), 600);
+    } else if (pageId === 'p2-7') {
+      playSpookySound('zombie');
+      flashScreen('red');
+      document.getElementById('p2ZombieScene')?.classList.add('mega-shake');
+      setTimeout(() => {
+        document.getElementById('p2ZombieScene')?.classList.remove('mega-shake');
+        flashScreen('red');
+      }, 1000);
+    } else if (pageId === 'p2-9') {
+      playSpookySound('chomp');
+      document.getElementById('p2BigTreeScene')?.classList.add('shake');
+      setTimeout(() => document.getElementById('p2BigTreeScene')?.classList.remove('shake'), 600);
     } else {
       playSpookySound('page');
     }
@@ -1074,7 +1246,7 @@
       power: 'Invisible to everyone! Looks just like a rock!',
       weakness: 'Only the Spider Scope can see it!' },
     giantlegs: { img: 'images/giant-legs.png', name: 'Giant Legs',
-      power: 'No body, no head. JUST LEGS. Stomps everything flat!',
+      power: 'No body, no head. FIVE LEGS that stomp everything flat! Never gets hungry!',
       weakness: 'Has no eyes or brain... runs into things and falls over!' },
     terradaxoar: { img: 'images/terradaxoar.png', name: 'Terradaxoar',
       power: 'Flies with FIVE eyes that see everything, and an ELECTRIC TAIL that zaps!',
